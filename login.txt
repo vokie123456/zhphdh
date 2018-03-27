@@ -1,0 +1,32 @@
+*** Settings ***
+Library           requests
+Library           Collections
+Variables         loginCode_data.py
+Library           RequestsLibrary
+Library           HttpLibrary
+
+*** Keywords ***
+login_xx
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    Create Session    url    http://testcredit.zhph.lan
+    &{headers}    Create Dictionary    username=xiaoxiaoya    password=123456    method=login
+    ${a}    Post Request    url    /logon.do    data=&{headers}    headers=${header}
+    log    ${a.content}
+    Should Contain    ${a.text}    个人小额信贷信息咨询服务平台
+
+loginSH
+    [Arguments]    ${loginCode}
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    Create Session    url    http://testcredit.zhph.lan    ${header}
+    &{headers}    Create Dictionary    username=${loginCode}    password=123456    method=login
+    ${a}    Post Request    url    /logon.do    data=&{headers}
+    log    ${a.text}
+    Should Contain    ${a.text}    个人小额信贷信息咨询服务平台
+
+login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    Create Session    url    http://testcredit.zhph.lan
+    &{headers}    Create Dictionary    username=xiaolu    password=123456    method=login
+    ${a}    Post Request    url    /logon.do    data=&{headers}    headers=${header}
+    log    ${a.content}
+    Should Contain    ${a.text}    个人小额信贷信息咨询服务平台

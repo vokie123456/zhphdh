@@ -1,0 +1,301 @@
+*** Settings ***
+Library           requests
+Library           json
+Library           Collections
+Resource          login.txt
+Library           DatabaseLibrary
+Variables         loginCode_data.py
+Library           RequestsLibrary
+Library           DatabaseVerify
+Variables         loanContract.py
+
+*** Test Cases ***
+111
+    Set Global Variable    ${loanContractNos}    ${loanContractNon}
+
+jmsq
+    login_xx
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${com0}    Create Dictionary    loanContractNo=${loanContractNos}    deductionType=0
+    ${q0}    Post Request    url    /p2pDeductionApplyAction.do?method=queryAccountInfoByLoanContractNo    data=${com0}    headers=${header}
+    ${m}    To Json    ${q0.content}
+    ${n}    Get From Dictionary    ${m}    result
+    ${l}    Get From Dictionary    ${n}    isOverdue
+    Should Be Equal As Strings    ${l}    0
+    #减免查询
+    ${fullSuccessDate0}    Get From Dictionary    ${n}    fullSuccessDate
+    ${payDate0}    Get From Dictionary    ${n}    payDate
+    ${billTerm0}    Get From Dictionary    ${n}    billTerm
+    ${monthPayDate0}    Get From Dictionary    ${n}    monthPayDate
+    ${returnFee0}    Get From Dictionary    ${n}    returnFee
+    ${duetoPenaltyInterest0}    Get From Dictionary    ${n}    duetoPenaltyInterest
+    Comment    ${loanContractNo0}    Get From Dictionary    ${n}    loanContractNo
+    ${loanName0}    Get From Dictionary    ${n}    loanName
+    #
+    ${area_no}    Get From Dictionary    ${n}    areaNo
+    ${c}    Evaluate    '${area_no}'.find('-')
+    ${areaNo0}    Evaluate    '${area_no}'[:${c}]
+    log    ${areaNo0}
+    #截取地址片段
+    ${paidTerm0}    Get From Dictionary    ${n}    paidTerm
+    ${paidAmount0}    Get From Dictionary    ${n}    paidAmount
+    ${loanAmount0}    Get From Dictionary    ${n}    loanAmount
+    ${duetoTotalAmount0}    Get From Dictionary    ${n}    duetoTotalAmount
+    ${estimatedDate0}    Get From Dictionary    ${n}    estimatedDate
+    ${com2}    Create Dictionary    loanContractNo=${loanContractNos}    commitCheck=true    deductionType=0    isOverdue=0    curEstimatedDate=${estimatedDate0}
+    ...    estimatedDate=${estimatedDate0}
+    ${q2}    Post Request    url    /p2pDeductionApplyAction.do?method=queryAccountInfoByLoanContractNo    data=${com2}    headers=${header}
+    log    ${q2.text}
+    ${a}    To Json    ${q2.text}
+    ${b}    Get From Dictionary    ${a}    flag
+    Should Be Equal As Strings    ${b}    true
+    #校验
+    ${method}    Evaluate    (None,'addDeductionApply')
+    ${fullSuccessDate}    Evaluate    (None,'${fullSuccessDate0}')
+    ${payDate}    Evaluate    (None,'${payDate0}')
+    ${billTerm}    Evaluate    (None,'${billTerm0}')
+    ${monthPayDate}    Evaluate    (None,'${monthPayDate0}')
+    ${returnFee}    Evaluate    (None,'${returnFee0}')
+    ${duetoPenaltyInterest}    Evaluate    (None,'${duetoPenaltyInterest0}')
+    ${loanContractNo}    Evaluate    (None,'${loanContractNos}')
+    ${loanName}    Evaluate    (None,'lq')
+    ${areaNo}    Evaluate    (None,'${areaNo0}')
+    ${deductionType}    Evaluate    (None,'0')
+    ${paidTerm}    Evaluate    (None,'${paidTerm0}')
+    ${paidAmount}    Evaluate    (None,'${paidAmount0}')
+    ${loanAmount}    Evaluate    (None,'${loanAmount0}')
+    ${duetoTotalAmount}    Evaluate    (None,'${duetoTotalAmount0}')
+    ${estimatedAmount}    Evaluate    (None,'100')
+    ${isOverdue}    Evaluate    (None,'0')
+    ${overdueDay}    Evaluate    (None,'0')
+    ${estimatedDate}    Evaluate    (None,'${estimatedDate0}')
+    ${applyUser}    Evaluate    (None,'xxy')
+    ${applyDept}    Evaluate    (None,'kmxs')
+    ${deductionDesc}    Evaluate    (None,'333')
+    ${annexFile}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Pictures/lovewallpaper/50216.jpg','rb'),'application/octet-stream')
+    Comment    ${method}    Convert To String    addDeductionApply
+    Comment    ${fullSuccessDate}    Convert To String    ${fullSuccessDate0}
+    Comment    ${payDate}    Convert To String    ${payDate0}
+    Comment    ${billTerm}    Convert To String    ${billTerm0}
+    Comment    ${monthPayDate}    Convert To String    ${monthPayDate0}
+    Comment    ${returnFee}    Convert To String    ${returnFee0}
+    Comment    ${duetoPenaltyInterest}    Convert To String    ${duetoPenaltyInterest0}
+    Comment    ${loanContractNo}    Convert To String    ${loanContractNos}
+    Comment    ${loanName}    Convert To String    ${loanName0}
+    Comment    ${areaNo}    Convert To String    ${areaNo0}
+    Comment    ${deductionType}    Convert To String    0
+    Comment    ${paidTerm}    Convert To String    ${paidTerm0}
+    Comment    ${paidAmount}    Convert To String    ${paidAmount0}
+    Comment    ${loanAmount}    Convert To String    ${loanAmount0}
+    Comment    ${duetoTotalAmount}    Convert To String    ${duetoTotalAmount0}
+    Comment    ${estimatedAmount}    Convert To String    100
+    Comment    ${isOverdue}    Convert To String    0
+    Comment    ${overdueDay}    Convert To String    0
+    Comment    ${estimatedDate}    Convert To String    ${estimatedDate0}
+    Comment    ${applyUser}    Convert To String    肖筱雅
+    Comment    ${applyDept}    Convert To String    昆明西山
+    Comment    ${deductionDesc}    Convert To String    333
+    Comment    ${annexFile}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Pictures/lovewallpaper/50216.jpg','rb'),'application/octet-stream')
+    ${com1}    Create Dictionary    method=${method}    fullSuccessDate=${fullSuccessDate}    payDate=${payDate}    billTerm=${billTerm}    monthPayDate=${monthPayDate}
+    ...    returnFee=${returnFee}    duetoPenaltyInterest=${duetoPenaltyInterest}    loanContractNo=${loanContractNo}    loanName=${loanName}    areaNo=${areaNo}    deductionType=${deductionType}
+    ...    paidTerm=${paidTerm}    paidAmount=${paidAmount}    isOverdue=${isOverdue}    overdueDay=${overdueDay}    loanAmount=${loanAmount}    grantLoanAmount=
+    ...    duetoTotalAmount=${duetoTotalAmount}    estimatedAmount=${estimatedAmount}    estimatedDate=${estimatedDate}    applyUser=${applyUser}    applyDept=${applyDept}    firstInest=
+    ...    deductionDesc=${deductionDesc}    annexFile=${annexFile}
+    log    ${com1}
+    ${q1}    Post Request    url    /p2pDeductionApplyAction.do    files=${com1}
+    log    ${q1.text}
+    Should Contain    ${q1.text}    新增减免申请
+    #提交减免申请
+
+222
+    ${h}    Get Data    select pri_number from ZH_P2P_DEDUCTION_APPLY where loan_contract_no='${loanContractNos}'
+    Set Global Variable    ${priNum_jm}    ${h}
+    #减免审核
+
+jmsh
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    : FOR    ${i}    IN    @{loginCode}
+    \    loginSH    ${i}
+    \    ${com}    Create Dictionary    tc=1    priNumber=${priNum_jm}    status=1    yj=333
+    \    ...    sl=y    rem=
+    \    ${q}    Post Request    url    /P2pDeductionCheckAction.do?method=reduceCheck    data=${com}    headers=${header}
+    \    log    ${q.text}
+    \    Should Contain    ${q.text}    1
+
+jqsq
+    login_xx
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${com0}    Create Dictionary    loanContractNo=${loanContractNos}
+    ${q0}    Post Request    url    /p2pOncepayApplicationAction.do?method=queryOncepayAccountDetailByLoanContractNo    data=${com0}    headers=${header}
+    log    ${q0.text}
+    ${m}    To Json    ${q0.text}
+    ${n}    Get From Dictionary    ${m}    result
+    ${l}    Get From Dictionary    ${n}    isOverdue
+    Should Be Equal As Strings    ${l}    0
+    #结清查询
+    ${estimatedDate0}    Get From Dictionary    ${n}    estimatedDate
+    ${deductionApplyId0}    Get From Dictionary    ${n}    deductionApplyId
+    ${returnFee0}    Get From Dictionary    ${n}    returnFee
+    ${billTerm0}    Get From Dictionary    ${n}    billTerm
+    ${monthPayDate0}    Get From Dictionary    ${n}    monthPayDate
+    Comment    ${loanContractNo0}    Get From Dictionary    ${n}    loanContractNo
+    ${loanName0}    Get From Dictionary    ${n}    loanName
+    ${areaNo0}    Get From Dictionary    ${n}    areaNo
+    ${isFullThirdTerm0}    Get From Dictionary    ${n}    isFullThirdTerm
+    ${duetoTotalAmount0}    Get From Dictionary    ${n}    duetoTotalAmount
+    ${estimatedAmount0}    Get From Dictionary    ${n}    estimatedAmount
+    ${com1}    Create Dictionary    loanContractNo=${loanContractNos}    commitCheck=true    curEstimatedDate=${estimatedDate0}    estimatedDate=${estimatedDate0}
+    ${q1}    Post Request    url    /p2pOncepayApplicationAction.do?method=queryOncepayAccountDetailByLoanContractNo    data=${com1}    headers=${header}
+    log    ${q1.text}
+    ${a}    To Json    ${q1.text}
+    ${b}    Get From Dictionary    ${a}    flag
+    Should Be Equal As Strings    ${b}    true
+    #校验
+    Comment    ${deductionApplyId}    Evaluate    (None,'${deductionApplyId0}')
+    Comment    ${returnFee}    Evaluate    (None,'${returnFee0}')
+    Comment    ${billTerm}    Evaluate    (None,'${billTerm0}')
+    Comment    ${monthPayDate}    Evaluate    (None,'${monthPayDate0}')
+    Comment    ${loanContractNo}    Evaluate    (None,'${loanContractNo0}')
+    Comment    ${loanName}    Evaluate    (None,'xxy')
+    Comment    ${areaNo}    Evaluate    (None,'${areaNo0}')
+    Comment    ${isFullThirdTerm}    Evaluate    (None,'${isFullThirdTerm0}')
+    Comment    ${duetoTotalAmount}    Evaluate    (None,'${duetoTotalAmount0}')
+    Comment    ${estimatedAmount}    Evaluate    (None,'${estimatedAmount0}')
+    Comment    ${estimatedDate}    Evaluate    (None,'${estimatedDate0}')
+    Comment    ${isOverdue}    Evaluate    (None,'0')
+    Comment    ${overdueDay}    Evaluate    (None,'0')
+    Comment    ${squareReason}    Evaluate    (None,'5')
+    Comment    ${payType}    Evaluate    (None,'2')
+    Comment    ${squareType}    Evaluate    (None,'1')
+    ${deductionApplyId}    Convert To String    ${deductionApplyId0}
+    ${returnFee}    Convert To String    ${returnFee0}
+    ${billTerm}    Convert To String    ${billTerm0}
+    ${monthPayDate}    Convert To String    ${monthPayDate0}
+    ${loanContractNo}    Convert To String    ${loanContractNos}
+    ${loanName}    Convert To String    lq
+    ${areaNo}    Convert To String    ${areaNo0}
+    ${isFullThirdTerm}    Convert To String    ${isFullThirdTerm0}
+    ${duetoTotalAmount}    Convert To String    ${duetoTotalAmount0}
+    ${estimatedAmount}    Convert To String    ${estimatedAmount0}
+    ${estimatedDate}    Convert To String    ${estimatedDate0}
+    ${isOverdue}    Convert To String    0
+    ${overdueDay}    Convert To String    0
+    ${squareReason}    Convert To String    5
+    ${payType}    Convert To String    2
+    ${squareType}    Convert To String    1
+    ${com2}    Create Dictionary    method=addOncepayApplication    deductionApplyId=${deductionApplyId}    returnFee=${returnFee}    billTerm=${billTerm}    monthPayDate=${monthPayDate}
+    ...    loanContractNo=${loanContractNo}    loanName=${loanName}    areaNo=${areaNo}    squareType=${squareType}    isFullThirdTerm=${isFullThirdTerm}    squareReason=${squareReason}
+    ...    isOverdue=${isOverdue}    overdueDay=${overdueDay}    duetoTotalAmount=${duetoTotalAmount}    estimatedAmount=${estimatedAmount}    estimatedDate=${estimatedDate}    payType=${payType}
+    ${q2}    Post Request    url    /p2pOncepayApplicationAction.do    params=${com2}
+    log    ${q2.text}
+    Should Contain    ${q2.text}    新增提前结清申请
+    #提交结清申请
+
+333
+    ${i}    Get Data    select pri_number from zh_p2p_oncepay_application t where t.loan_contract_no='${loanContractNos}'
+    Set Global Variable    ${priNum_jq}    ${i}
+    #结清审核
+
+jqsh
+    login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${com}    Create Dictionary    status=1    priNumber=${priNum_jq}    yj=111
+    ${q}    Post Request    url    /p2pOncepayReviewAction.do?method=passOrback    data=${com}    headers=${header}
+    log    ${q.text}
+    Should Contain    ${q.text}    1
+
+wygl
+    login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${file}    evaluate    ('jqls.xlsx',open('C:/Users/Administrator/Desktop/dh/jqls.xlsx','rb'),'application/octet-stream')
+    ${select1}    evaluate    (None,u'招行红照壁支行' .encode('gbk'))
+    ${com0}    Create Dictionary    file=${file}    select1=${select1}
+    ${q0}    Post Request    url    /p2pFinancingBankWaterAction.do?method=uploadFuJian    files=${com0}
+    log    ${q0.text}
+    Should Contain    ${q0.text}    uploadSuccess
+    #上传文件
+    ${com1}    Create Dictionary    temp=1    preTotalFee=940700.16
+    ${q1}    Post Request    url    /p2pFinancingBankWaterAction.do?method=saveOrClearWater    data=${com1}    headers=${header}
+    log    ${q1.text}
+    Should Contain    ${q1.text}    success
+    #提交
+
+444
+    ${j}    Get Data    select pri_number from zh_p2p_bank_water_match order by pri_number desc
+    Set Global Variable    ${matchPriNumber_pp}    ${j}
+    log    ${matchPriNumber_pp}
+    #网银匹配
+
+wypp
+    login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${com0}    Create Dictionary    loanContractNo=${loanContractNos}    matchPriNumber=${matchPriNumber_pp}    fee=200000.0    type=存对公
+    ${q0}    Post Request    url    /p2pFinancingBankWaterMatchAction.do?method=queryWaterMatch    data=${com0}    headers=${header}
+    ${a}    To Json    ${q0.text}
+    log    ${a[0]}
+    ${areaName}    Get From Dictionary    ${a[0]}    areaName
+    #查询
+    ${com1}    Create Dictionary    matchPriNumber=${matchPriNumber_pp}    payModel=1    loanContractNo=${loanContractNos}    areaName=${areaName}    amount=200000.0
+    ...    applyrefundPri=00    financeChannel=银行转账    typehid=存对公    repaymentTime=2018-02-05 09:40:40.0
+    ${q1}    Post Request    url    /p2pFinancingBankWaterMatchAction.do?method=matchBankWater    data=${com1}    headers=${header}
+    log    ${q1.text}
+    Should Contain    ${q1.text}    success
+    ${com2}    Create Dictionary    method=p2pBankWaterMatch    isNewPay=1    perPageCount=15    pageTurn=YES    currPage=1
+    ...    name=肖筱雅
+    ${q2}    Post Request    url    /p2pFinancingBankWaterMatchAction.do    data=${com1}    headers=${header}
+    log    ${q2.text}
+    Comment    Should Contain    ${q2.text}    操作员姓名
+
+cdgsh
+    login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${com0}    Create Dictionary    matchPriNumber=${matchPriNumber_pp}
+    ${q0}    Post Request    url    /p2pFinancingBankWaterMatchAction.do?method=goAuditor    data=${com0}    headers=${header}
+    log    ${q0.text}
+    Should Contain    ${q0.text}    success    #提交审核
+    ${com2}    Create Dictionary    loanContractNo=${loanContractNos}    matchIds=${matchPriNumber_pp}
+    ${q2}    Post Request    url    /P2pSaveToPublicInfoCheckAction.do?method=p2pSaveToPublicMatch    data=${com2}    headers=${header}
+    log    ${q2.text}
+    Should Contain    ${q2.text}    操作成功    #审核通过
+
+555
+    ${k}    Get Data    select pri_number from clspuser.zh_repayment_records where loan_contract_no='${loanContractNos}' and amount=200000
+    Set Global Variable    ${priNum_tk}    ${k}
+    log    ${priNum_tk}
+    #退款申请
+
+tksq
+    login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${file}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Pictures/lovewallpaper/50216.jpg','rb'),'application/octet-stream')
+    ${loanContractNo}    Evaluate    (None,'${loanContractNos}')
+    ${priNumber}    Evaluate    (None,'${priNum_tk}')
+    ${pri}    Evaluate    (None,'1')
+    ${com0}    Create Dictionary    file=${file}    loanContractNo=${loanContractNo}    priNumber=${priNumber}    pri=${pri}    f=${empty}
+    ${q0}    Post Request    url    /P2pApplyRefundAction.do?method=uploadFile    files=${com0}
+    log    ${q0.text}
+    ${com1}    Create Dictionary    method=doSubmit    companyName=${empty}    payBank=${empty}    payNumber=${empty}
+    ${com2}    Create Dictionary    allow=2000    applyMoney=100    area=达州达川    deductionAmount=200000.00    department=aaa
+    ...    liveAddrCity=1101    liveAddrCounty=110101    liveAddrDetail=玉林    liveAddrProvince=11    loanContractNo=${loanContractNos}    mainBody=HT
+    ...    pri=${q0.text}    priNumber=${priNum_tk}    recBank=农行    recName=bbb    recNumber=6222024402015614141    refundReason=2
+    ...    remark=ccc    repayType=0    size=568.599609375 kb
+    ${q1}    Post Request    url    /P2pApplyRefundAction.do    params=${com1}    data=${com2}    headers=${header}
+    log    ${q1.text}
+    Should Contain    ${q1.text}    1
+    #退款申请
+    Set Global Variable    ${pri_tk}    ${q0.text}
+    log    ${pri_tk}
+
+tksh
+    login_xl
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${com0}    Create Dictionary    status=1    priNumber=${pri_tk}    loanContractNo=${loanContractNos}
+    ${q0}    Post Request    url    /P2pCheckRefundAction.do?method=goPassOrBack    data=${com0}    headers=${header}
+    log    ${q0.text}
+    Should Contain    ${q0.text}    1
+    ${com1}    Create Dictionary    status=1    priNumber=${pri_tk}    loanContractNo=${loanContractNos}
+    ${q1}    Post Request    url    /P2pCheckRefundAction.do?method=goPassOrBack    data=${com1}    headers=${header}
+    log    ${q1.text}
+    Should Contain    ${q1.text}    1
+
+*** Keywords ***
