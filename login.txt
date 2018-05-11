@@ -7,11 +7,11 @@ Library           HttpLibrary
 
 *** Keywords ***
 login_xx
-    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
+    ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded
     Create Session    url    http://testcredit.zhph.lan
     &{headers}    Create Dictionary    username=xiaoxiaoya    password=123456    method=login
     ${a}    Post Request    url    /logon.do    data=&{headers}    headers=${header}
-    log    ${a.content}
+    log    ${a.text}
     Should Contain    ${a.text}    个人小额信贷信息咨询服务平台
 
 loginSH
@@ -28,5 +28,5 @@ login_xl
     Create Session    url    http://testcredit.zhph.lan
     &{headers}    Create Dictionary    username=xiaolu    password=123456    method=login
     ${a}    Post Request    url    /logon.do    data=&{headers}    headers=${header}
-    log    ${a.content}
+    log    ${a.text}
     Should Contain    ${a.text}    个人小额信贷信息咨询服务平台

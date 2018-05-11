@@ -11,14 +11,15 @@ Variables         loanContract.py
 
 *** Test Cases ***
 111
-    Set Global Variable    ${loanContractNos}    ${loanContractNon}
+    Set Global Variable    ${loanContractNos}    20015089233378517873
+    Comment    Set Global Variable    ${loanContractNos}    ${loanContractNon}
 
-jmsq
+减免申请
     login_xx
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     ${com0}    Create Dictionary    loanContractNo=${loanContractNos}    deductionType=0
     ${q0}    Post Request    url    /p2pDeductionApplyAction.do?method=queryAccountInfoByLoanContractNo    data=${com0}    headers=${header}
-    ${m}    To Json    ${q0.content}
+    ${m}    To Json    ${q0.text}
     ${n}    Get From Dictionary    ${m}    result
     ${l}    Get From Dictionary    ${n}    isOverdue
     Should Be Equal As Strings    ${l}    0
@@ -69,10 +70,10 @@ jmsq
     ${isOverdue}    Evaluate    (None,'0')
     ${overdueDay}    Evaluate    (None,'0')
     ${estimatedDate}    Evaluate    (None,'${estimatedDate0}')
-    ${applyUser}    Evaluate    (None,'xxy')
-    ${applyDept}    Evaluate    (None,'kmxs')
+    ${applyUser}    Evaluate    (None,u'肖筱雅'.encode('gbk'))
+    ${applyDept}    Evaluate    (None,u'昆明西山'.encode('gbk'))
     ${deductionDesc}    Evaluate    (None,'333')
-    ${annexFile}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Pictures/lovewallpaper/50216.jpg','rb'),'application/octet-stream')
+    ${annexFile}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Desktop/zhphdh/50216.jpg','rb'),'application/octet-stream')
     Comment    ${method}    Convert To String    addDeductionApply
     Comment    ${fullSuccessDate}    Convert To String    ${fullSuccessDate0}
     Comment    ${payDate}    Convert To String    ${payDate0}
@@ -95,7 +96,7 @@ jmsq
     Comment    ${applyUser}    Convert To String    肖筱雅
     Comment    ${applyDept}    Convert To String    昆明西山
     Comment    ${deductionDesc}    Convert To String    333
-    Comment    ${annexFile}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Pictures/lovewallpaper/50216.jpg','rb'),'application/octet-stream')
+    Comment    ${annexFile}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Desktop/zhphdh/50216.jpg','rb'),'application/octet-stream')
     ${com1}    Create Dictionary    method=${method}    fullSuccessDate=${fullSuccessDate}    payDate=${payDate}    billTerm=${billTerm}    monthPayDate=${monthPayDate}
     ...    returnFee=${returnFee}    duetoPenaltyInterest=${duetoPenaltyInterest}    loanContractNo=${loanContractNo}    loanName=${loanName}    areaNo=${areaNo}    deductionType=${deductionType}
     ...    paidTerm=${paidTerm}    paidAmount=${paidAmount}    isOverdue=${isOverdue}    overdueDay=${overdueDay}    loanAmount=${loanAmount}    grantLoanAmount=
@@ -112,17 +113,17 @@ jmsq
     Set Global Variable    ${priNum_jm}    ${h}
     #减免审核
 
-jmsh
+减免审核
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     : FOR    ${i}    IN    @{loginCode}
     \    loginSH    ${i}
     \    ${com}    Create Dictionary    tc=1    priNumber=${priNum_jm}    status=1    yj=333
-    \    ...    sl=y    rem=
+    \    ...    selVal=0    rem=0.0
     \    ${q}    Post Request    url    /P2pDeductionCheckAction.do?method=reduceCheck    data=${com}    headers=${header}
     \    log    ${q.text}
     \    Should Contain    ${q.text}    1
 
-jqsq
+提前结清申请
     login_xx
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     ${com0}    Create Dictionary    loanContractNo=${loanContractNos}
@@ -196,7 +197,7 @@ jqsq
     Set Global Variable    ${priNum_jq}    ${i}
     #结清审核
 
-jqsh
+提前结清审核
     login_xl
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     ${com}    Create Dictionary    status=1    priNumber=${priNum_jq}    yj=111
@@ -204,10 +205,10 @@ jqsh
     log    ${q.text}
     Should Contain    ${q.text}    1
 
-wygl
+网银流水管理
     login_xl
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
-    ${file}    evaluate    ('jqls.xlsx',open('C:/Users/Administrator/Desktop/dh/jqls.xlsx','rb'),'application/octet-stream')
+    ${file}    evaluate    ('jqls.xlsx',open('C:/Users/Administrator/Desktop/zhphdh/jqls.xlsx','rb'),'application/octet-stream')
     ${select1}    evaluate    (None,u'招行红照壁支行' .encode('gbk'))
     ${com0}    Create Dictionary    file=${file}    select1=${select1}
     ${q0}    Post Request    url    /p2pFinancingBankWaterAction.do?method=uploadFuJian    files=${com0}
@@ -223,10 +224,9 @@ wygl
 444
     ${j}    Get Data    select pri_number from zh_p2p_bank_water_match order by pri_number desc
     Set Global Variable    ${matchPriNumber_pp}    ${j}
-    log    ${matchPriNumber_pp}
     #网银匹配
 
-wypp
+网银流水匹配
     login_xl
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     ${com0}    Create Dictionary    loanContractNo=${loanContractNos}    matchPriNumber=${matchPriNumber_pp}    fee=200000.0    type=存对公
@@ -246,7 +246,7 @@ wypp
     log    ${q2.text}
     Comment    Should Contain    ${q2.text}    操作员姓名
 
-cdgsh
+存对公审核
     login_xl
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     ${com0}    Create Dictionary    matchPriNumber=${matchPriNumber_pp}
@@ -261,13 +261,12 @@ cdgsh
 555
     ${k}    Get Data    select pri_number from clspuser.zh_repayment_records where loan_contract_no='${loanContractNos}' and amount=200000
     Set Global Variable    ${priNum_tk}    ${k}
-    log    ${priNum_tk}
     #退款申请
 
-tksq
+退款申请
     login_xl
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
-    ${file}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Pictures/lovewallpaper/50216.jpg','rb'),'application/octet-stream')
+    ${file}    Evaluate    ('50216.jpg',open('C:/Users/Administrator/Desktop/zhphdh/50216.jpg','rb'),'application/octet-stream')
     ${loanContractNo}    Evaluate    (None,'${loanContractNos}')
     ${priNumber}    Evaluate    (None,'${priNum_tk}')
     ${pri}    Evaluate    (None,'1')
@@ -286,7 +285,7 @@ tksq
     Set Global Variable    ${pri_tk}    ${q0.text}
     log    ${pri_tk}
 
-tksh
+退款审核
     login_xl
     ${header}    Create Dictionary    Content-Type=application/x-www-form-urlencoded;charset=utf-8
     ${com0}    Create Dictionary    status=1    priNumber=${pri_tk}    loanContractNo=${loanContractNos}

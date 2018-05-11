@@ -1,6 +1,0 @@
-*** Settings ***
-Library           requests
-Library           RequestsLibrary
-Library           json
-Library           Selenium2Library
-Library           Collections
